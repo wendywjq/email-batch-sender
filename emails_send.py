@@ -3,37 +3,41 @@ import yagmail
 import os
 import json
 
-# 读取邮箱配置
-with open('email_config.json', 'r') as f:
+# 读取 config.json
+with open('email_config.json', 'r', encoding='utf-8') as f:
     config = json.load(f)
-your_email = config['email']
-your_password = config['password']
 
-# 附件目录
-attachment_dir = './attachments'
+excel_file = config['excel_file']
+attachment_dir = config['attachment_dir']
+email_user = config['sender']['email']
+email_password = config['sender']['password']
+smtp_host = config['smtp']['host']
+smtp_port = config['smtp']['port']
+smtp_ssl = config['smtp'].get('ssl', True)
+
+# 创建附件目录（如果不存在）
 os.makedirs(attachment_dir, exist_ok=True)
 
-# 初始化发件客户端（SMTP）
+# 初始化发件客户端
 yag = yagmail.SMTP(
-    user=your_email,
-    password=your_password,
-    host='smtp.exmail.qq.com',
-    port=465,
-    smtp_ssl=True
+    user=email_user,
+    password=email_password,
+    host=smtp_host,
+    port=smtp_port,
+    smtp_ssl=smtp_ssl
 )
 
-# 读取 Excel
-df = pd.read_excel('emails_comtent.xlsx')
+# 读取 Excel 数据
+df = pd.read_excel(excel_file)
 
-# 批量处理邮件
+# 遍历邮件
 for index, row in df.iterrows():
     if str(row.get('是否发送', '')).strip().upper() != 'Y':
         print(f"跳过第 {index + 2} 行（未标记发送）")
         continue
 
-    # 收件人/抄送人
-    to_raw = str(row['收件人邮箱']).replace('，', ',') if pd.notna(row.get('收件人邮箱')) else ''
-    cc_raw = str(row['抄送人邮箱']).replace('，', ',') if pd.notna(row.get('抄送人邮箱')) else ''
+    to_raw = str(row.get('收件人邮箱', '')).replace('，', ',') if pd.notna(row.get('收件人邮箱')) else ''
+    cc_raw = str(row.get('抄送人邮箱', '')).replace('，', ',') if pd.notna(row.get('抄送人邮箱')) else ''
 
     to_list = [addr.strip() for addr in to_raw.split(',') if addr.strip()]
     cc_list = [addr.strip() for addr in cc_raw.split(',') if addr.strip()]
@@ -57,6 +61,7 @@ for index, row in df.iterrows():
     try:
         yag.send(to=to_list, cc=cc_list, subject=subject, contents=contents, attachments=attachment_path)
         print(f"已发送：{', '.join(to_list)}")
-        if cc_list: print(f"抄送：{', '.join(cc_list)}")
+        if cc_list:
+            print(f"抄送：{', '.join(cc_list)}")
     except Exception as e:
         print(f"发送失败：{', '.join(to_list)}，原因：{e}")

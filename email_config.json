@@ -1,5 +1,14 @@
 {
-    "email": "你的完整邮箱地址",
-    "password": "你的SMTP授权码"
+    "excel_file": "test_emails.xlsx",
+    "attachment_dir": "./attachments",
+    "smtp": {
+      "host": "smtp.exmail.qq.com",
+      "port": 465,
+      "ssl": true
+    },
+    "sender": {
+      "email": "你的完整邮箱地址",
+      "password": "你的SMTP授权码"
+    }
 }
   
