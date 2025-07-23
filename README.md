@@ -28,22 +28,31 @@ emails/
 ````
 ---
 
-## 邮箱配置文件说明（email\_config.json）
-
-为避免将敏感信息（如邮箱账号、SMTP 密码）写入主脚本中，本项目将其独立保存为 `email_config.json`：
+## 配置文件说明（email\_config.json）
 
 ```json
 {
-  "email": "你的完整邮箱地址",
-  "password": "你的SMTP授权码"
+  "excel_file": "test_emails.xlsx",
+  "attachment_dir": "./attachments",
+  "smtp": {
+    "host": "smtp.exmail.qq.com",
+    "port": 465,
+    "ssl": true
+  },
+  "sender": {
+    "email": "你的完整邮箱地址",
+    "password": "你的SMTP授权码"
+  }
 }
 ```
 
-请将该文件放置于脚本同级目录下。
+字段说明：
 
-```
-email_config.json
-```
+* `excel_file`：Excel 文件名（相对于项目根目录）
+* `attachment_dir`：附件存放文件夹路径
+* `smtp`：SMTP 邮件服务器信息（host、端口、是否启用 SSL）
+* `sender.email`：邮箱账号（完整地址）
+* `sender.password`：SMTP 授权码（不是登录密码）
 
 ---
 
