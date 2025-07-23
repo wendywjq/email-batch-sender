@@ -32,8 +32,8 @@ for index, row in df.iterrows():
         continue
 
     # 收件人/抄送人
-    to_raw = str(row.get('收件人邮箱', '')).replace('，', ',')
-    cc_raw = str(row.get('抄送人邮箱', '')).replace('，', ',')
+    to_raw = str(row['收件人邮箱']).replace('，', ',') if pd.notna(row.get('收件人邮箱')) else ''
+    cc_raw = str(row['抄送人邮箱']).replace('，', ',') if pd.notna(row.get('抄送人邮箱')) else ''
 
     to_list = [addr.strip() for addr in to_raw.split(',') if addr.strip()]
     cc_list = [addr.strip() for addr in cc_raw.split(',') if addr.strip()]
